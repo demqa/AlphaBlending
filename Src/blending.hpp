@@ -2,7 +2,8 @@
 #define BLENDING_H_
 
 #include <SFML/Graphics.hpp>
-#include <immintrin.h>
+#include <emmintrin.h>
+#include <smmintrin.h>
 
 namespace Blending
 {
