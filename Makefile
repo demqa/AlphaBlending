@@ -4,7 +4,7 @@
 
 CC     = g++
 
-CFLAGS = -c -mavx -mavx2
+CFLAGS = -c -O3 -mavx -mavx2
 
 OBJDIR = Obj
 MKDIR  = mkdir -p
