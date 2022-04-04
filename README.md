@@ -18,3 +18,21 @@ Now I want to tell you about my results with optimisation of Alpha Blending proc
 |      -03           |  ON   |           3347  (5.22x)            |
 
 These results show, that we should use SSE to optimise Alpha Blending, because it works really well, especially with more efficient optimisation flags.
+
+#### Installation:
+
+Without SSE:
+```
+make
+```
+
+With SSE:
+```
+make sse
+```
+
+
+#### Usage:
+```
+./blend background.png foreground.png x_position y_position
+```

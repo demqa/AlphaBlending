@@ -3,8 +3,6 @@
 namespace Blending
 {
 
-int OPTIMISE = 0;
-
 unsigned char mixColor(unsigned char BG, unsigned char FG, unsigned char alpha)
 {
     return ((unsigned int) FG * alpha + (unsigned int) BG * (255 - alpha)) / 255;
@@ -26,14 +24,12 @@ void Blend(sf::Image &BGImage, sf::Image &FGImage, sf::Vector2i &position)
 
     unsigned int *dest = (unsigned int *) back;
 
+    #ifdef __SSE_OPTIMISATION__
+
     const unsigned char I = 255, Z = 0x80;
 
     const __m128i   _0 =                   _mm_set_epi8(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
     const __m128i _255 = _mm_cvtepu8_epi16(_mm_set_epi8(I,I,I,I, I,I,I,I, I,I,I,I, I,I,I,I));
-
-    if (OPTIMISE)
-    {
-
     
     for (unsigned y = 0; y < FGheight; ++y)
     {
@@ -78,34 +74,35 @@ void Blend(sf::Image &BGImage, sf::Image &FGImage, sf::Vector2i &position)
             _mm_store_si128 ((__m128i *) &dest[(y + Y) * BGwidth + x + X], color);
        }
     }
-    }
-    else
+
+    #else // __SSE_OPTIMISATION__
+
+    for (unsigned y = 0; y < FGheight; ++y)
     {
-        for (unsigned y = 0; y < FGheight; ++y)
+        for (unsigned x = 0; x < FGwidth; ++x)
         {
-            for (unsigned x = 0; x < FGwidth; ++x)
+            if (x + X >= BGwidth || y + Y >= BGheight) continue;
+
+            unsigned int  BColor = back[(y + Y) * BGwidth + x + X];
+            unsigned int  FColor = fore[y * FGwidth + x];
+
+            unsigned char ALPHA  = FColor >> 24;
+            unsigned char BAlpha = BColor >> 24;
+
+            unsigned int  result = BAlpha << 24;
+
+            for (int i = 0; i < 3; ++i)
             {
-                if (x + X >= BGwidth || y + Y >= BGheight) continue;
-
-                unsigned int  BColor = back[(y + Y) * BGwidth + x + X];
-                unsigned int  FColor = fore[y * FGwidth + x];
-
-                unsigned char ALPHA  = FColor >> 24;
-                unsigned char BAlpha = BColor >> 24;
-
-                unsigned int  result = BAlpha << 24;
-
-                for (int i = 0; i < 3; ++i)
-                {
-                    unsigned char FCol = ((0xFF << (8 * i)) & FColor) >> (8 * i);
-                    unsigned char BCol = ((0xFF << (8 * i)) & BColor) >> (8 * i);
-                    result            +=  mixColor(BCol, FCol, ALPHA) << (8 * i);
-                }
-
-                dest[(y + Y) * BGwidth + x + X] = result;
+                unsigned char FCol = ((0xFF << (8 * i)) & FColor) >> (8 * i);
+                unsigned char BCol = ((0xFF << (8 * i)) & BColor) >> (8 * i);
+                result            +=  mixColor(BCol, FCol, ALPHA) << (8 * i);
             }
+
+            dest[(y + Y) * BGwidth + x + X] = result;
         }
-        }
+    }
+
+    #endif // __SSE_OPTIMISATION__
 }
 
 };
@@ -134,27 +131,27 @@ int main(int argc, char *argv[])
     if (argc != 5)
     {
         printf("there is not enough arguments. I want back.png, "
-               "fore.png & pair x, y - picture position");
+               "fore.png & pair x, y - picture position\n");
         return -1;
     }
 
     sf::Image background;
     if (!background.loadFromFile(argv[1]))
     {
-        printf("cant get background image");
+        printf("cant get background image\n");
         return -2;
     }
 
     sf::Image foreground;
     if (!foreground.loadFromFile(argv[2]))
     {
-        printf("cant get foreground image");
+        printf("cant get foreground image\n");
         return -3;
     }
 
     if (!isNumber(argv[3]) || !isNumber(argv[4]))
     {
-        printf("arguments 3 & 4 should be integer numbers");
+        printf("arguments 3 & 4 should be integer numbers\n");
         return -4;
     }
 
@@ -171,7 +168,7 @@ int main(int argc, char *argv[])
 
     if (!background.saveToFile("output.png"))
     {
-        printf("cant save file with name output.png");
+        printf("cant save file with name output.png\n");
         return -5;
     }
 
