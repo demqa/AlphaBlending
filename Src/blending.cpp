@@ -19,8 +19,8 @@ void Blend(sf::Image &BGImage, sf::Image &FGImage, sf::Vector2i &position)
     unsigned BGwidth  = BGImage.getSize().x;
     unsigned BGheight = BGImage.getSize().y;
 
-    unsigned int *back = (unsigned int *) BGImage.getPixelsPtr();
-    unsigned int *fore = (unsigned int *) FGImage.getPixelsPtr();
+    const unsigned int *back = (unsigned int *) BGImage.getPixelsPtr();
+    const unsigned int *fore = (unsigned int *) FGImage.getPixelsPtr();
 
     unsigned int *dest = (unsigned int *) back;
 
@@ -157,14 +157,7 @@ int main(int argc, char *argv[])
 
     sf::Vector2i position(atoi(argv[3]), atoi(argv[4]));
 
-    sf::Clock clock;
-    clock.restart();
-
-    for (int i = 0; i < 100; ++i)
-        Blending::Blend(background, foreground, position);
-
-    sf::Time time = clock.getElapsedTime();
-    printf("time in microseconds is %lld\n", time.asMicroseconds());
+    Blending::Blend(background, foreground, position);
 
     if (!background.saveToFile("output.png"))
     {
