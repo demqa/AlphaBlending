@@ -66,7 +66,7 @@ void Blend(sf::Image &BGImage, sf::Image &FGImage, sf::Vector2i &position)
 
             static const __m128i moveSum = _mm_set_epi8 ( Z,  Z,  Z, Z, Z, Z, Z, Z,
                                                          15, 13, 11, 9, 7, 5, 3, 1);
-            sum = _mm_shuffle_epi8 (sum, moveSum);                                   // sum[i] = (sium[i] >> 8) = (sum[i] / 256)
+            sum = _mm_shuffle_epi8 (sum, moveSum);                                   // sum[i] = (sum[i] >> 8) = (sum[i] / 256)
             SUM = _mm_shuffle_epi8 (SUM, moveSum);
 
             __m128i color = (__m128i) _mm_movelh_ps ((__m128) sum, (__m128) SUM);    // color = (sumHi << 8*8) | sum
