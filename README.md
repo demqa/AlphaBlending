@@ -1,7 +1,7 @@
 # This is Alpha Blending, that I advanced with SSE
 
 
-Now I want to tell you about my results with optimisation of Alpha Blending process:
+There are my results of measuring Alpha Blending time with different optimisations:
 
 | Optimisation Flags | SSE   | Time In Microseconds for 100 times |
 | :----------------: | :---: | :--------------------------------- |
@@ -17,7 +17,7 @@ Now I want to tell you about my results with optimisation of Alpha Blending proc
 |      -03           |  OFF  |           17483                    | 
 |      -03           |  ON   |           3347  (5.22x)            |
 
-These results show, that we should use SSE to optimise Alpha Blending, because it works really well, especially with more efficient optimisation flags.
+These results show, that we should use SSE to optimise Alpha Blending, because it improves an effieciency a lot, especially with harder optimisation flags.
 
 #### Installation:
 
@@ -35,4 +35,5 @@ make sse
 #### Usage:
 ```
 ./blend background.png foreground.png x_position y_position
+# x and y position on the background image where to put top-left corner of foreground image
 ```
